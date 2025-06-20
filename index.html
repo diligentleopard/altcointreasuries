@@ -8,6 +8,7 @@
     <meta name="keywords" content="altcoin treasuries, solana holdings, hyperliquid holdings, crypto treasuries, institutional crypto">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <style>
         :root {
             --primary: #9945FF; /* Solana purple */
@@ -21,6 +22,7 @@
             --border: #2d2b42;
             --card-bg: #17152c;
             --table-header: #1e1c36;
+            --editor-bg: #1a1830;
         }
         
         * {
@@ -477,6 +479,76 @@
             color: var(--primary);
         }
         
+        /* Data Editor */
+        .editor-container {
+            background: var(--editor-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid var(--border);
+        }
+        
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .editor-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .editor-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .editor-btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-family: 'Inconsolata', monospace;
+        }
+        
+        .load-btn {
+            background: rgba(0, 193, 222, 0.2);
+            color: var(--secondary);
+        }
+        
+        .load-btn:hover {
+            background: rgba(0, 193, 222, 0.3);
+        }
+        
+        .save-btn {
+            background: rgba(153, 69, 255, 0.2);
+            color: var(--primary);
+        }
+        
+        .save-btn:hover {
+            background: rgba(153, 69, 255, 0.3);
+        }
+        
+        .yaml-editor {
+            width: 100%;
+            min-height: 400px;
+            background: var(--darker);
+            color: #e0e0ff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.2rem;
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+        }
+        
         /* Footer */
         footer {
             background: rgba(9, 6, 26, 0.8);
@@ -670,28 +742,28 @@
                     <i class="fas fa-chart-line"></i>
                     <span>Total SOL Held</span>
                 </div>
-                <div class="stat-value">8,724,592 SOL</div>
+                <div class="stat-value" id="total-sol">Loading...</div>
             </div>
             <div class="stat-item hpl-stat">
                 <div class="stat-label">
                     <i class="fas fa-layer-group"></i>
                     <span>Total HPL Held</span>
                 </div>
-                <div class="stat-value">24,472,391 HPL</div>
+                <div class="stat-value" id="total-hpl">Loading...</div>
             </div>
             <div class="stat-item">
                 <div class="stat-label">
                     <i class="fas fa-building"></i>
                     <span>Entities Tracked</span>
                 </div>
-                <div class="stat-value">127</div>
+                <div class="stat-value" id="entities-tracked">Loading...</div>
             </div>
             <div class="stat-item">
                 <div class="stat-label">
                     <i class="fas fa-sync-alt"></i>
                     <span>Last Updated</span>
                 </div>
-                <div class="stat-value">Jun 19, 2025</div>
+                <div class="stat-value" id="last-updated">Loading...</div>
             </div>
         </div>
     </div>
@@ -712,9 +784,9 @@
                     <i class="fas fa-search"></i>
                     <input type="text" id="search-input" placeholder="Search companies or tickers...">
                 </div>
-                <button class="filter-btn">
-                    <i class="fas fa-filter"></i>
-                    <span>Filters</span>
+                <button class="filter-btn" id="show-editor-btn">
+                    <i class="fas fa-database"></i>
+                    <span>Manage Data</span>
                 </button>
             </div>
         </div>
@@ -737,6 +809,22 @@
                     <!-- Table content will be populated by JavaScript -->
                 </tbody>
             </table>
+        </div>
+
+        <!-- Data Editor Section (Initially Hidden) -->
+        <div class="editor-container" id="editor-container" style="display: none;">
+            <div class="editor-header">
+                <h3 class="editor-title">Manage Company Data</h3>
+                <div class="editor-buttons">
+                    <button class="editor-btn load-btn" id="load-default-btn">
+                        <i class="fas fa-download"></i> Load Default
+                    </button>
+                    <button class="editor-btn save-btn" id="save-btn">
+                        <i class="fas fa-save"></i> Save & Apply
+                    </button>
+                </div>
+            </div>
+            <textarea class="yaml-editor" id="yaml-editor"></textarea>
         </div>
     </div>
 
@@ -789,208 +877,257 @@
     </footer>
 
     <script>
-        // Sample data structure - this would be in a separate data.js file
-        const companies = [
-            {
-                id: 1,
-                rank: 1,
-                name: "Solana Ventures",
-                ticker: "SOLV",
-                logo: "SV",
-                country: "USA",
-                marketCap: "8.15B",
-                enterpriseValue: "7.92B",
-                cryptoPerShare: { coin: "SOL", amount: 12.4 },
-                mNAV: 42.3,
-                holdings: [
-                    { coin: "SOL", amount: "2,481,295", value: "2.1B" },
-                    { coin: "HPL", amount: "4,872,100", value: "1.32B" }
-                ]
-            },
-            {
-                id: 2,
-                rank: 2,
-                name: "HyperLiquid Fund",
-                ticker: "HYPR",
-                logo: "HF",
-                country: "Cayman Islands",
-                marketCap: "5.32B",
-                enterpriseValue: "5.11B",
-                cryptoPerShare: { coin: "HPL", amount: 84.2 },
-                mNAV: 38.7,
-                holdings: [
-                    { coin: "HPL", amount: "8,192,477", value: "2.2B" },
-                    { coin: "SOL", amount: "1,028,500", value: "0.67B" }
-                ]
-            },
-            {
-                id: 3,
-                rank: 3,
-                name: "Crypto Wealth Inc",
-                ticker: "CRYP",
-                logo: "CW",
-                country: "USA",
-                marketCap: "4.15B",
-                enterpriseValue: "3.97B",
-                cryptoPerShare: { coin: "SOL", amount: 8.7 },
-                mNAV: 28.5,
-                holdings: [
-                    { coin: "SOL", amount: "1,267,800", value: "0.83B" },
-                    { coin: "ETH", amount: "42,800", value: "0.15B" },
-                    { coin: "HPL", amount: "3,127,500", value: "0.94B" }
-                ]
-            },
-            {
-                id: 4,
-                rank: 4,
-                name: "NextWave Capital",
-                ticker: "NWAV",
-                logo: "NW",
-                country: "Singapore",
-                marketCap: "2.75B",
-                enterpriseValue: "2.62B",
-                cryptoPerShare: { coin: "HPL", amount: 32.5 },
-                mNAV: 21.8,
-                holdings: [
-                    { coin: "HPL", amount: "2,280,314", value: "1.18B" }
-                ]
-            },
-            {
-                id: 5,
-                rank: 5,
-                name: "SolTech Group",
-                ticker: "SOLT",
-                logo: "ST",
-                country: "USA",
-                marketCap: "3.28B",
-                enterpriseValue: "3.15B",
-                cryptoPerShare: { coin: "SOL", amount: 6.4 },
-                mNAV: 18.2,
-                holdings: [
-                    { coin: "SOL", amount: "846,200", value: "1.05B" }
-                ]
-            },
-            {
-                id: 6,
-                rank: 6,
-                name: "Digital Assets Ltd",
-                ticker: "DIGA",
-                logo: "DA",
-                country: "UK",
-                marketCap: "1.85B",
-                enterpriseValue: "1.72B",
-                cryptoPerShare: { coin: "HPL", amount: 21.4 },
-                mNAV: -3.2,
-                holdings: [
-                    { coin: "HPL", amount: "1,500,000", value: "0.68B" },
-                    { coin: "ETH", amount: "18,200", value: "0.102B" }
-                ]
-            },
-            {
-                id: 7,
-                rank: 7,
-                name: "Blockchain Holdings",
-                ticker: "BCHL",
-                logo: "BH",
-                country: "Switzerland",
-                marketCap: "3.75B",
-                enterpriseValue: "3.62B",
-                cryptoPerShare: { coin: "SOL", amount: 5.2 },
-                mNAV: 15.6,
-                holdings: [
-                    { coin: "SOL", amount: "1,250,000", value: "1.55B" },
-                    { coin: "HPL", amount: "1,800,000", value: "0.92B" }
-                ]
-            },
-            {
-                id: 8,
-                rank: 8,
-                name: "Crypto Innovators",
-                ticker: "CRIN",
-                logo: "CI",
-                country: "USA",
-                marketCap: "1.42B",
-                enterpriseValue: "1.38B",
-                cryptoPerShare: { coin: "HPL", amount: 18.7 },
-                mNAV: 8.9,
-                holdings: [
-                    { coin: "HPL", amount: "1,200,000", value: "0.64B" },
-                    { coin: "SOL", amount: "420,000", value: "0.55B" }
-                ]
-            },
-            {
-                id: 9,
-                rank: 9,
-                name: "Solana Partners",
-                ticker: "SOLP",
-                logo: "SP",
-                country: "USA",
-                marketCap: "2.18B",
-                enterpriseValue: "2.05B",
-                cryptoPerShare: { coin: "SOL", amount: 9.8 },
-                mNAV: 22.4,
-                holdings: [
-                    { coin: "SOL", amount: "980,000", value: "1.28B" }
-                ]
-            },
-            {
-                id: 10,
-                rank: 10,
-                name: "HyperLiquid Ventures",
-                ticker: "HLV",
-                logo: "HL",
-                country: "Cayman Islands",
-                marketCap: "1.65B",
-                enterpriseValue: "1.58B",
-                cryptoPerShare: { coin: "HPL", amount: 28.3 },
-                mNAV: 19.7,
-                holdings: [
-                    { coin: "HPL", amount: "1,750,000", value: "0.94B" }
-                ]
-            },
-            {
-                id: 11,
-                rank: 11,
-                name: "Token Trust",
-                ticker: "TKNT",
-                logo: "TT",
-                country: "Singapore",
-                marketCap: "1.28B",
-                enterpriseValue: "1.22B",
-                cryptoPerShare: { coin: "SOL", amount: 3.2 },
-                mNAV: 12.5,
-                holdings: [
-                    { coin: "SOL", amount: "480,000", value: "0.62B" },
-                    { coin: "HPL", amount: "850,000", value: "0.46B" }
-                ]
-            },
-            {
-                id: 12,
-                rank: 12,
-                name: "Crypto Asset Fund",
-                ticker: "CAF",
-                logo: "CA",
-                country: "UK",
-                marketCap: "0.98B",
-                enterpriseValue: "0.95B",
-                cryptoPerShare: { coin: "HPL", amount: 15.8 },
-                mNAV: 6.4,
-                holdings: [
-                    { coin: "HPL", amount: "950,000", value: "0.51B" }
-                ]
-            }
-        ];
-
         // DOM Elements
         const tableBody = document.getElementById('table-body');
         const searchInput = document.getElementById('search-input');
         const aggregatedBtn = document.getElementById('aggregated-btn');
         const splitBtn = document.getElementById('split-btn');
+        const showEditorBtn = document.getElementById('show-editor-btn');
+        const editorContainer = document.getElementById('editor-container');
+        const yamlEditor = document.getElementById('yaml-editor');
+        const loadDefaultBtn = document.getElementById('load-default-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const totalSolElement = document.getElementById('total-sol');
+        const totalHplElement = document.getElementById('total-hpl');
+        const entitiesTrackedElement = document.getElementById('entities-tracked');
+        const lastUpdatedElement = document.getElementById('last-updated');
         
         // View state
         let currentView = 'aggregated';
-        let filteredCompanies = [...companies];
+        let companies = [];
+        let filteredCompanies = [];
         
+        // Default data in YAML format
+        const defaultYamlData = `companies:
+  - id: 1
+    rank: 1
+    name: "Solana Ventures"
+    ticker: "SOLV"
+    logo: "SV"
+    country: "USA"
+    marketCap: "8.15B"
+    enterpriseValue: "7.92B"
+    cryptoPerShare: 
+      coin: "SOL"
+      amount: 12.4
+    mNAV: 42.3
+    holdings:
+      - coin: "SOL"
+        amount: "2,481,295"
+        value: "2.1B"
+      - coin: "HPL"
+        amount: "4,872,100"
+        value: "1.32B"
+  
+  - id: 2
+    rank: 2
+    name: "HyperLiquid Fund"
+    ticker: "HYPR"
+    logo: "HF"
+    country: "Cayman Islands"
+    marketCap: "5.32B"
+    enterpriseValue: "5.11B"
+    cryptoPerShare: 
+      coin: "HPL"
+      amount: 84.2
+    mNAV: 38.7
+    holdings:
+      - coin: "HPL"
+        amount: "8,192,477"
+        value: "2.2B"
+      - coin: "SOL"
+        amount: "1,028,500"
+        value: "0.67B"
+  
+  - id: 3
+    rank: 3
+    name: "Crypto Wealth Inc"
+    ticker: "CRYP"
+    logo: "CW"
+    country: "USA"
+    marketCap: "4.15B"
+    enterpriseValue: "3.97B"
+    cryptoPerShare: 
+      coin: "SOL"
+      amount: 8.7
+    mNAV: 28.5
+    holdings:
+      - coin: "SOL"
+        amount: "1,267,800"
+        value: "0.83B"
+      - coin: "ETH"
+        amount: "42,800"
+        value: "0.15B"
+      - coin: "HPL"
+        amount: "3,127,500"
+        value: "0.94B"
+  
+  - id: 4
+    rank: 4
+    name: "NextWave Capital"
+    ticker: "NWAV"
+    logo: "NW"
+    country: "Singapore"
+    marketCap: "2.75B"
+    enterpriseValue: "2.62B"
+    cryptoPerShare: 
+      coin: "HPL"
+      amount: 32.5
+    mNAV: 21.8
+    holdings:
+      - coin: "HPL"
+        amount: "2,280,314"
+        value: "1.18B"
+  
+  - id: 5
+    rank: 5
+    name: "SolTech Group"
+    ticker: "SOLT"
+    logo: "ST"
+    country: "USA"
+    marketCap: "3.28B"
+    enterpriseValue: "3.15B"
+    cryptoPerShare: 
+      coin: "SOL"
+      amount: 6.4
+    mNAV: 18.2
+    holdings:
+      - coin: "SOL"
+        amount: "846,200"
+        value: "1.05B"
+  
+  - id: 6
+    rank: 6
+    name: "Digital Assets Ltd"
+    ticker: "DIGA"
+    logo: "DA"
+    country: "UK"
+    marketCap: "1.85B"
+    enterpriseValue: "1.72B"
+    cryptoPerShare: 
+      coin: "HPL"
+        amount: 21.4
+    mNAV: -3.2
+    holdings:
+      - coin: "HPL"
+        amount: "1,500,000"
+        value: "0.68B"
+      - coin: "ETH"
+        amount: "18,200"
+        value: "0.102B"
+  
+  - id: 7
+    rank: 7
+    name: "Blockchain Holdings"
+    ticker: "BCHL"
+    logo: "BH"
+    country: "Switzerland"
+    marketCap: "3.75B"
+    enterpriseValue: "3.62B"
+    cryptoPerShare: 
+      coin: "SOL"
+      amount: 5.2
+    mNAV: 15.6
+    holdings:
+      - coin: "SOL"
+        amount: "1,250,000"
+        value: "1.55B"
+      - coin: "HPL"
+        amount: "1,800,000"
+        value: "0.92B"
+  
+  - id: 8
+    rank: 8
+    name: "Crypto Innovators"
+    ticker: "CRIN"
+    logo: "CI"
+    country: "USA"
+    marketCap: "1.42B"
+    enterpriseValue: "1.38B"
+    cryptoPerShare: 
+      coin: "HPL"
+      amount: 18.7
+    mNAV: 8.9
+    holdings:
+      - coin: "HPL"
+        amount: "1,200,000"
+        value: "0.64B"
+      - coin: "SOL"
+        amount: "420,000"
+        value: "0.55B"
+  
+  - id: 9
+    rank: 9
+    name: "Solana Partners"
+    ticker: "SOLP"
+    logo: "SP"
+    country: "USA"
+    marketCap: "2.18B"
+    enterpriseValue: "2.05B"
+    cryptoPerShare: 
+      coin: "SOL"
+      amount: 9.8
+    mNAV: 22.4
+    holdings:
+      - coin: "SOL"
+        amount: "980,000"
+        value: "1.28B"
+  
+  - id: 10
+    rank: 10
+    name: "HyperLiquid Ventures"
+    ticker: "HLV"
+    logo: "HL"
+    country: "Cayman Islands"
+    marketCap: "1.65B"
+    enterpriseValue: "1.58B"
+    cryptoPerShare: 
+      coin: "HPL"
+      amount: 28.3
+    mNAV: 19.7
+    holdings:
+      - coin: "HPL"
+        amount: "1,750,000"
+        value: "0.94B"
+  
+  - id: 11
+    rank: 11
+    name: "Token Trust"
+    ticker: "TKNT"
+    logo: "TT"
+    country: "Singapore"
+    marketCap: "1.28B"
+    enterpriseValue: "1.22B"
+    cryptoPerShare: 
+      coin: "SOL"
+      amount: 3.2
+    mNAV: 12.5
+    holdings:
+      - coin: "SOL"
+        amount: "480,000"
+        value: "0.62B"
+      - coin: "HPL"
+        amount: "850,000"
+        value: "0.46B"
+  
+  - id: 12
+    rank: 12
+    name: "Crypto Asset Fund"
+    ticker: "CAF"
+    logo: "CA"
+    country: "UK"
+    marketCap: "0.98B"
+    enterpriseValue: "0.95B"
+    cryptoPerShare: 
+      coin: "HPL"
+      amount: 15.8
+    mNAV: 6.4
+    holdings:
+      - coin: "HPL"
+        amount: "950,000"
+        value: "0.51B"
+`;
+
         // Helper functions
         function getCoinClass(coin) {
             const coinClasses = {
@@ -1021,7 +1158,7 @@
         }
         
         function parseValue(valueStr) {
-            const value = parseFloat(valueStr.replace('$', '').replace('B', ''));
+            const value = parseFloat(valueStr.replace(/[$,]/g, ''));
             if (valueStr.includes('B')) return value * 1e9;
             if (valueStr.includes('M')) return value * 1e6;
             return value;
@@ -1031,6 +1168,34 @@
             return holdings.reduce((total, holding) => {
                 return total + parseValue(holding.value);
             }, 0);
+        }
+        
+        function calculateAggregateHoldings() {
+            let totalSol = 0;
+            let totalHpl = 0;
+            let totalEntities = companies.length;
+            
+            companies.forEach(company => {
+                company.holdings.forEach(holding => {
+                    const amount = parseFloat(holding.amount.replace(/,/g, ''));
+                    if (holding.coin === 'SOL') totalSol += amount;
+                    if (holding.coin === 'HPL') totalHpl += amount;
+                });
+            });
+            
+            // Format numbers with commas
+            totalSol = totalSol.toLocaleString();
+            totalHpl = totalHpl.toLocaleString();
+            
+            // Update stats bar
+            totalSolElement.textContent = `${totalSol} SOL`;
+            totalHplElement.textContent = `${totalHpl} HPL`;
+            entitiesTrackedElement.textContent = totalEntities;
+            lastUpdatedElement.textContent = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
         }
         
         // Render functions
@@ -1141,17 +1306,40 @@
             }
         }
         
+        function loadCompaniesFromYaml(yamlData) {
+            try {
+                const data = jsyaml.load(yamlData);
+                companies = data.companies || [];
+                filteredCompanies = [...companies];
+                
+                // Update stats
+                calculateAggregateHoldings();
+                
+                // Re-render view
+                if (currentView === 'aggregated') {
+                    renderAggregatedView();
+                } else {
+                    renderSplitView();
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error parsing YAML:', error);
+                alert('Error parsing YAML data. Please check your syntax.');
+                return false;
+            }
+        }
+        
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Render initial view
-            renderAggregatedView();
+            // Load default data
+            loadCompaniesFromYaml(defaultYamlData);
             
-            // Search functionality
+            // Set up event listeners
             searchInput.addEventListener('input', function() {
                 filterCompanies(this.value.toLowerCase());
             });
             
-            // View toggle functionality
             aggregatedBtn.addEventListener('click', function() {
                 currentView = 'aggregated';
                 aggregatedBtn.classList.add('active');
@@ -1166,16 +1354,30 @@
                 renderSplitView();
             });
             
-            // Row highlight on hover
-            tableBody.addEventListener('mouseover', function(e) {
-                if (e.target.tagName === 'TR') {
-                    e.target.style.backgroundColor = 'rgba(64, 61, 125, 0.4)';
+            showEditorBtn.addEventListener('click', function() {
+                const isVisible = editorContainer.style.display === 'block';
+                editorContainer.style.display = isVisible ? 'none' : 'block';
+                showEditorBtn.innerHTML = isVisible ? 
+                    '<i class="fas fa-database"></i><span>Manage Data</span>' : 
+                    '<i class="fas fa-times"></i><span>Hide Editor</span>';
+                
+                // Load current data into editor when shown
+                if (!isVisible) {
+                    const currentData = { companies };
+                    yamlEditor.value = jsyaml.dump(currentData);
                 }
             });
             
-            tableBody.addEventListener('mouseout', function(e) {
-                if (e.target.tagName === 'TR') {
-                    e.target.style.backgroundColor = '';
+            loadDefaultBtn.addEventListener('click', function() {
+                if (confirm('Load default data? This will overwrite your current data.')) {
+                    yamlEditor.value = defaultYamlData;
+                    loadCompaniesFromYaml(defaultYamlData);
+                }
+            });
+            
+            saveBtn.addEventListener('click', function() {
+                if (loadCompaniesFromYaml(yamlEditor.value)) {
+                    alert('Data applied successfully!');
                 }
             });
         });
