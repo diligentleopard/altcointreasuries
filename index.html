@@ -133,6 +133,17 @@
             width: 100%;
         }
         
+        /* Disabled navigation items */
+        nav a.disabled {
+            color: #6c757d !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        nav a.disabled::after {
+            display: none;
+        }
+        
         /* Stats Bar */
         .stats-bar {
             background: rgba(23, 21, 44, 0.8);
@@ -303,6 +314,7 @@
             width: 100%;
             border-collapse: collapse;
             min-width: 1000px;
+            table-layout: fixed;
         }
         
         thead {
@@ -327,6 +339,7 @@
             padding: 1.2rem;
             border-bottom: 1px solid var(--border);
             font-size: 0.95rem;
+            vertical-align: top;
         }
         
         tr:last-child td {
@@ -384,6 +397,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 0.8rem;
+            align-items: flex-start;
         }
         
         .coin-badge {
@@ -443,6 +457,7 @@
         .value-cell {
             font-weight: 600;
             color: white;
+            white-space: nowrap;
         }
         
         .sol-value {
@@ -464,6 +479,7 @@
         .nav-cell {
             font-weight: 600;
             font-size: 1.05rem;
+            white-space: nowrap;
         }
         
         .source-link {
@@ -725,9 +741,9 @@
                 <ul>
                     <li><a href="#" class="active">Dashboard</a></li>
                     <li><a href="#">Public Companies</a></li>
-                    <li><a href="#">VC Funds</a></li>
-                    <li><a href="#">ETFs & Trusts</a></li>
-                    <li><a href="#">Crypto Funds</a></li>
+                    <li><a href="#" class="disabled">VC Funds</a></li>
+                    <li><a href="#" class="disabled">ETFs & Trusts</a></li>
+                    <li><a href="#" class="disabled">Crypto Funds</a></li>
                     <li><a href="#">Methodology</a></li>
                 </ul>
             </nav>
