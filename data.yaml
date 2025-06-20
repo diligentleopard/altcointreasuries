@@ -6,11 +6,11 @@ companies:
   # Each company entry starts with a hyphen
   - id: 1 # Unique numeric ID
     rank: 1 # Ranking position
-    name: Solana Ventures # Company name
-    ticker: SOLV # Stock ticker symbol
+    name: Sol Strategies # Company name
+    ticker: HODL.CN # Stock ticker symbol
     logo: SV # Logo initials (2 characters)
-    country: USA # Country of headquarters
-    marketCap: 8.15B # Market capitalization (with B for billions)
+    country: CAN # Country of headquarters
+    marketCap: 0.42B # Market capitalization (with B for billions)
     enterpriseValue: 7.92B # Enterprise value (with B for billions)
     cryptoPerShare: # Crypto per share information
       coin: SOL # Cryptocurrency symbol
