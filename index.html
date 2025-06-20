@@ -827,8 +827,8 @@
             </table>
         </div>
 
-        <!-- Data Editor Section (Initially Hidden) -->
-        <div class="editor-container" id="editor-container" style="display: none;">
+           <!-- Data Editor Section -->
+           <div class="editor-container" id="editor-container" style="display: none;">
             <div class="editor-header">
                 <h3 class="editor-title">Manage Company Data</h3>
                 <div class="editor-buttons">
@@ -841,6 +841,15 @@
                 </div>
             </div>
             <textarea class="yaml-editor" id="yaml-editor"></textarea>
+            <div class="yaml-syntax-help">
+                <h4>YAML Syntax Tips:</h4>
+                <ul>
+                    <li>Use consistent 2-space indentation</li>
+                    <li>Strings don't need quotes unless they contain special characters</li>
+                    <li>Lists start with hyphens (-)</li>
+                    <li>Keys and values separated by colons (:)</li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -913,235 +922,239 @@
         let companies = [];
         let filteredCompanies = [];
         
-        // Default data in YAML format
-        const defaultYamlData = `companies:
+        // Corrected YAML data
+        const defaultYamlData = `# Altcoin Treasuries Data
+# Format: YAML 1.2
+# Last Updated: 2025-06-20
+
+companies:
   - id: 1
     rank: 1
-    name: "Solana Ventures"
-    ticker: "SOLV"
-    logo: "SV"
-    country: "USA"
-    marketCap: "8.15B"
-    enterpriseValue: "7.92B"
-    cryptoPerShare: 
-      coin: "SOL"
+    name: Solana Ventures
+    ticker: SOLV
+    logo: SV
+    country: USA
+    marketCap: 8.15B
+    enterpriseValue: 7.92B
+    cryptoPerShare:
+      coin: SOL
       amount: 12.4
     mNAV: 42.3
     holdings:
-      - coin: "SOL"
-        amount: "2,481,295"
-        value: "2.1B"
-      - coin: "HPL"
-        amount: "4,872,100"
-        value: "1.32B"
-  
+      - coin: SOL
+        amount: 2,481,295
+        value: 2.1B
+      - coin: HPL
+        amount: 4,872,100
+        value: 1.32B
+
   - id: 2
     rank: 2
-    name: "HyperLiquid Fund"
-    ticker: "HYPR"
-    logo: "HF"
-    country: "Cayman Islands"
-    marketCap: "5.32B"
-    enterpriseValue: "5.11B"
-    cryptoPerShare: 
-      coin: "HPL"
+    name: HyperLiquid Fund
+    ticker: HYPR
+    logo: HF
+    country: Cayman Islands
+    marketCap: 5.32B
+    enterpriseValue: 5.11B
+    cryptoPerShare:
+      coin: HPL
       amount: 84.2
     mNAV: 38.7
     holdings:
-      - coin: "HPL"
-        amount: "8,192,477"
-        value: "2.2B"
-      - coin: "SOL"
-        amount: "1,028,500"
-        value: "0.67B"
-  
+      - coin: HPL
+        amount: 8,192,477
+        value: 2.2B
+      - coin: SOL
+        amount: 1,028,500
+        value: 0.67B
+
   - id: 3
     rank: 3
-    name: "Crypto Wealth Inc"
-    ticker: "CRYP"
-    logo: "CW"
-    country: "USA"
-    marketCap: "4.15B"
-    enterpriseValue: "3.97B"
-    cryptoPerShare: 
-      coin: "SOL"
+    name: Crypto Wealth Inc
+    ticker: CRYP
+    logo: CW
+    country: USA
+    marketCap: 4.15B
+    enterpriseValue: 3.97B
+    cryptoPerShare:
+      coin: SOL
       amount: 8.7
     mNAV: 28.5
     holdings:
-      - coin: "SOL"
-        amount: "1,267,800"
-        value: "0.83B"
-      - coin: "ETH"
-        amount: "42,800"
-        value: "0.15B"
-      - coin: "HPL"
-        amount: "3,127,500"
-        value: "0.94B"
-  
+      - coin: SOL
+        amount: 1,267,800
+        value: 0.83B
+      - coin: ETH
+        amount: 42,800
+        value: 0.15B
+      - coin: HPL
+        amount: 3,127,500
+        value: 0.94B
+
   - id: 4
     rank: 4
-    name: "NextWave Capital"
-    ticker: "NWAV"
-    logo: "NW"
-    country: "Singapore"
-    marketCap: "2.75B"
-    enterpriseValue: "2.62B"
-    cryptoPerShare: 
-      coin: "HPL"
+    name: NextWave Capital
+    ticker: NWAV
+    logo: NW
+    country: Singapore
+    marketCap: 2.75B
+    enterpriseValue: 2.62B
+    cryptoPerShare:
+      coin: HPL
       amount: 32.5
     mNAV: 21.8
     holdings:
-      - coin: "HPL"
-        amount: "2,280,314"
-        value: "1.18B"
-  
+      - coin: HPL
+        amount: 2,280,314
+        value: 1.18B
+
   - id: 5
     rank: 5
-    name: "SolTech Group"
-    ticker: "SOLT"
-    logo: "ST"
-    country: "USA"
-    marketCap: "3.28B"
-    enterpriseValue: "3.15B"
-    cryptoPerShare: 
-      coin: "SOL"
+    name: SolTech Group
+    ticker: SOLT
+    logo: ST
+    country: USA
+    marketCap: 3.28B
+    enterpriseValue: 3.15B
+    cryptoPerShare:
+      coin: SOL
       amount: 6.4
     mNAV: 18.2
     holdings:
-      - coin: "SOL"
-        amount: "846,200"
-        value: "1.05B"
-  
+      - coin: SOL
+        amount: 846,200
+        value: 1.05B
+
   - id: 6
     rank: 6
-    name: "Digital Assets Ltd"
-    ticker: "DIGA"
-    logo: "DA"
-    country: "UK"
-    marketCap: "1.85B"
-    enterpriseValue: "1.72B"
-    cryptoPerShare: 
-      coin: "HPL"
-        amount: 21.4
+    name: Digital Assets Ltd
+    ticker: DIGA
+    logo: DA
+    country: UK
+    marketCap: 1.85B
+    enterpriseValue: 1.72B
+    cryptoPerShare:
+      coin: HPL
+      amount: 21.4
     mNAV: -3.2
     holdings:
-      - coin: "HPL"
-        amount: "1,500,000"
-        value: "0.68B"
-      - coin: "ETH"
-        amount: "18,200"
-        value: "0.102B"
-  
+      - coin: HPL
+        amount: 1,500,000
+        value: 0.68B
+      - coin: ETH
+        amount: 18,200
+        value: 0.102B
+
   - id: 7
     rank: 7
-    name: "Blockchain Holdings"
-    ticker: "BCHL"
-    logo: "BH"
-    country: "Switzerland"
-    marketCap: "3.75B"
-    enterpriseValue: "3.62B"
-    cryptoPerShare: 
-      coin: "SOL"
+    name: Blockchain Holdings
+    ticker: BCHL
+    logo: BH
+    country: Switzerland
+    marketCap: 3.75B
+    enterpriseValue: 3.62B
+    cryptoPerShare:
+      coin: SOL
       amount: 5.2
     mNAV: 15.6
     holdings:
-      - coin: "SOL"
-        amount: "1,250,000"
-        value: "1.55B"
-      - coin: "HPL"
-        amount: "1,800,000"
-        value: "0.92B"
-  
+      - coin: SOL
+        amount: 1,250,000
+        value: 1.55B
+      - coin: HPL
+        amount: 1,800,000
+        value: 0.92B
+
   - id: 8
     rank: 8
-    name: "Crypto Innovators"
-    ticker: "CRIN"
-    logo: "CI"
-    country: "USA"
-    marketCap: "1.42B"
-    enterpriseValue: "1.38B"
-    cryptoPerShare: 
-      coin: "HPL"
+    name: Crypto Innovators
+    ticker: CRIN
+    logo: CI
+    country: USA
+    marketCap: 1.42B
+    enterpriseValue: 1.38B
+    cryptoPerShare:
+      coin: HPL
       amount: 18.7
     mNAV: 8.9
     holdings:
-      - coin: "HPL"
-        amount: "1,200,000"
-        value: "0.64B"
-      - coin: "SOL"
-        amount: "420,000"
-        value: "0.55B"
-  
+      - coin: HPL
+        amount: 1,200,000
+        value: 0.64B
+      - coin: SOL
+        amount: 420,000
+        value: 0.55B
+
   - id: 9
     rank: 9
-    name: "Solana Partners"
-    ticker: "SOLP"
-    logo: "SP"
-    country: "USA"
-    marketCap: "2.18B"
-    enterpriseValue: "2.05B"
-    cryptoPerShare: 
-      coin: "SOL"
+    name: Solana Partners
+    ticker: SOLP
+    logo: SP
+    country: USA
+    marketCap: 2.18B
+    enterpriseValue: 2.05B
+    cryptoPerShare:
+      coin: SOL
       amount: 9.8
     mNAV: 22.4
     holdings:
-      - coin: "SOL"
-        amount: "980,000"
-        value: "1.28B"
-  
+      - coin: SOL
+        amount: 980,000
+        value: 1.28B
+
   - id: 10
     rank: 10
-    name: "HyperLiquid Ventures"
-    ticker: "HLV"
-    logo: "HL"
-    country: "Cayman Islands"
-    marketCap: "1.65B"
-    enterpriseValue: "1.58B"
-    cryptoPerShare: 
-      coin: "HPL"
+    name: HyperLiquid Ventures
+    ticker: HLV
+    logo: HL
+    country: Cayman Islands
+    marketCap: 1.65B
+    enterpriseValue: 1.58B
+    cryptoPerShare:
+      coin: HPL
       amount: 28.3
     mNAV: 19.7
     holdings:
-      - coin: "HPL"
-        amount: "1,750,000"
-        value: "0.94B"
-  
+      - coin: HPL
+        amount: 1,750,000
+        value: 0.94B
+
   - id: 11
     rank: 11
-    name: "Token Trust"
-    ticker: "TKNT"
-    logo: "TT"
-    country: "Singapore"
-    marketCap: "1.28B"
-    enterpriseValue: "1.22B"
-    cryptoPerShare: 
-      coin: "SOL"
+    name: Token Trust
+    ticker: TKNT
+    logo: TT
+    country: Singapore
+    marketCap: 1.28B
+    enterpriseValue: 1.22B
+    cryptoPerShare:
+      coin: SOL
       amount: 3.2
     mNAV: 12.5
     holdings:
-      - coin: "SOL"
-        amount: "480,000"
-        value: "0.62B"
-      - coin: "HPL"
-        amount: "850,000"
-        value: "0.46B"
-  
+      - coin: SOL
+        amount: 480,000
+        value: 0.62B
+      - coin: HPL
+        amount: 850,000
+        value: 0.46B
+
   - id: 12
     rank: 12
-    name: "Crypto Asset Fund"
-    ticker: "CAF"
-    logo: "CA"
-    country: "UK"
-    marketCap: "0.98B"
-    enterpriseValue: "0.95B"
-    cryptoPerShare: 
-      coin: "HPL"
+    name: Crypto Asset Fund
+    ticker: CAF
+    logo: CA
+    country: UK
+    marketCap: 0.98B
+    enterpriseValue: 0.95B
+    cryptoPerShare:
+      coin: HPL
       amount: 15.8
     mNAV: 6.4
     holdings:
-      - coin: "HPL"
-        amount: "950,000"
-        value: "0.51B"
+      - coin: HPL
+        amount: 950,000
+        value: 0.51B
 `;
 
         // Helper functions
@@ -1174,9 +1187,15 @@
         }
         
         function parseValue(valueStr) {
-            const value = parseFloat(valueStr.replace(/[$,]/g, ''));
-            if (valueStr.includes('B')) return value * 1e9;
-            if (valueStr.includes('M')) return value * 1e6;
+            // Handle both "1.5B" and "$1.5B" formats
+            const cleanStr = valueStr.replace(/[$,]/g, '');
+            const value = parseFloat(cleanStr.replace(/[^\d.]/g, ''));
+            
+            if (cleanStr.includes('B') || valueStr.includes('B')) {
+                return value * 1e9;
+            } else if (cleanStr.includes('M') || valueStr.includes('M')) {
+                return value * 1e6;
+            }
             return value;
         }
         
@@ -1311,7 +1330,7 @@
                 filteredCompanies = companies.filter(company => 
                     company.name.toLowerCase().includes(term) ||
                     company.ticker.toLowerCase().includes(term) ||
-                    company.country.toLowerCase().includes(term)
+                    (company.country && company.country.toLowerCase().includes(term))
                 );
             }
             
@@ -1324,8 +1343,36 @@
         
         function loadCompaniesFromYaml(yamlData) {
             try {
-                const data = jsyaml.load(yamlData);
-                companies = data.companies || [];
+                // First, validate and clean the YAML
+                const cleanedYaml = yamlData
+                    .replace(/:\s*\n\s{2,}(\w)/g, ': $1') // Fix broken mappings
+                    .replace(/(\w+):\s*'(.*?)'/g, '$1: $2') // Remove unnecessary quotes
+                    .replace(/(\w+):\s*"(.*?)"/g, '$1: $2'); // Remove unnecessary quotes
+                
+                const data = jsyaml.load(cleanedYaml);
+                
+                // Validate the structure
+                if (!data || !Array.isArray(data.companies)) {
+                    throw new Error("Invalid data structure: 'companies' array not found");
+                }
+                
+                companies = data.companies.map(company => {
+                    // Ensure all required fields exist
+                    return {
+                        id: company.id || 0,
+                        rank: company.rank || 0,
+                        name: company.name || "Unknown Company",
+                        ticker: company.ticker || "N/A",
+                        logo: company.logo || "??",
+                        country: company.country || "",
+                        marketCap: company.marketCap || "N/A",
+                        enterpriseValue: company.enterpriseValue || "N/A",
+                        cryptoPerShare: company.cryptoPerShare || { coin: "N/A", amount: 0 },
+                        mNAV: company.mNAV || 0,
+                        holdings: company.holdings || []
+                    };
+                });
+                
                 filteredCompanies = [...companies];
                 
                 // Update stats
@@ -1340,8 +1387,8 @@
                 
                 return true;
             } catch (error) {
-                console.error('Error parsing YAML:', error);
-                alert('Error parsing YAML data. Please check your syntax.');
+                console.error('YAML Parsing Error:', error);
+                alert(`Error parsing YAML data: ${error.message}\n\nCheck your YAML syntax and structure.`);
                 return false;
             }
         }
@@ -1380,7 +1427,12 @@
                 // Load current data into editor when shown
                 if (!isVisible) {
                     const currentData = { companies };
-                    yamlEditor.value = jsyaml.dump(currentData);
+                    try {
+                        yamlEditor.value = jsyaml.dump(currentData);
+                    } catch (error) {
+                        yamlEditor.value = defaultYamlData;
+                        console.error('Error generating YAML:', error);
+                    }
                 }
             });
             
@@ -1394,8 +1446,24 @@
             saveBtn.addEventListener('click', function() {
                 if (loadCompaniesFromYaml(yamlEditor.value)) {
                     alert('Data applied successfully!');
+                    
+                    // Save to localStorage for persistence
+                    try {
+                        localStorage.setItem('altcoinTreasuriesData', yamlEditor.value);
+                    } catch (e) {
+                        console.log('Local storage not available');
+                    }
                 }
             });
+            
+            // Try to load from localStorage
+            const savedData = localStorage.getItem('altcoinTreasuriesData');
+            if (savedData) {
+                if (confirm('Saved data found. Would you like to load it?')) {
+                    yamlEditor.value = savedData;
+                    loadCompaniesFromYaml(savedData);
+                }
+            }
         });
     </script>
 </body>
