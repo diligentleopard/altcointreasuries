@@ -1,0 +1,40 @@
+companies:
+  - id: 1
+    rank: 1
+    name: "Solana Ventures"
+    ticker: "SOLV"
+    logo: "SV"
+    country: "USA"
+    marketCap: "8.15B"
+    enterpriseValue: "7.92B"
+    cryptoPerShare: 
+      coin: "SOL"
+      amount: 12.4
+    mNAV: 42.3
+    holdings:
+      - coin: "SOL"
+        amount: "2,481,295"
+        value: "2.1B"
+      - coin: "HPL"
+        amount: "4,872,100"
+        value: "1.32B"
+  
+  - id: 2
+    rank: 2
+    name: "HyperLiquid Fund"
+    ticker: "HYPR"
+    logo: "HF"
+    country: "Cayman Islands"
+    marketCap: "5.32B"
+    enterpriseValue: "5.11B"
+    cryptoPerShare: 
+      coin: "HPL"
+      amount: 84.2
+    mNAV: 38.7
+    holdings:
+      - coin: "HPL"
+        amount: "8,192,477"
+        value: "2.2B"
+      - coin: "SOL"
+        amount: "1,028,500"
+        value: "0.67B"
