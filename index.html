@@ -1397,14 +1397,25 @@
         }
         
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load default data
+        document.addEventListener('DOMContentLoaded', function () {
+    fetch('data.yaml')
+        .then(res => res.text())
+        .then(yamlText => {
+            loadCompaniesFromYaml(yamlText);
+            toggleDataFormat('yaml');
+            dataEditor.value = yamlText;
+        })
+        .catch(err => {
+            console.error('Failed to load data.yaml:', err);
             loadCompaniesFromJson(defaultJsonData);
-            
-            // Set up event listeners
-            searchInput.addEventListener('input', function() {
-                filterCompanies(this.value.toLowerCase());
-            });
+            toggleDataFormat('json');
+            dataEditor.value = defaultJsonData;
+        });
+
+    // Event listeners (keep these below)
+    searchInput.addEventListener('input', function () {
+        filterCompanies(this.value.toLowerCase());
+    });
             
             aggregatedBtn.addEventListener('click', function() {
                 currentView = 'aggregated';
