@@ -4,22 +4,22 @@
 
 companies:
   # Each company entry starts with a hyphen
-  - id: 1                     # Unique numeric ID
-    rank: 1                   # Ranking position
-    name: Solana Ventures      # Company name
-    ticker: SOLV              # Stock ticker symbol
-    logo: SV                  # Logo initials (2 characters)
-    country: USA              # Country of headquarters
-    marketCap: 8.15B          # Market capitalization (with B for billions)
-    enterpriseValue: 7.92B    # Enterprise value (with B for billions)
-    cryptoPerShare:           # Crypto per share information
-      coin: SOL               # Cryptocurrency symbol
-      amount: 12.4            # Amount per share
-    mNAV: 42.3                # Modified Net Asset Value percentage
-    holdings:                 # List of cryptocurrency holdings
-      - coin: SOL             # Cryptocurrency symbol
-        amount: 2,481,295     # Quantity held (with commas)
-        value: 2.1B           # USD value (with B for billions)
+  - id: 1 # Unique numeric ID
+    rank: 1 # Ranking position
+    name: Solana Ventures # Company name
+    ticker: SOLV # Stock ticker symbol
+    logo: SV # Logo initials (2 characters)
+    country: USA # Country of headquarters
+    marketCap: 8.15B # Market capitalization (with B for billions)
+    enterpriseValue: 7.92B # Enterprise value (with B for billions)
+    cryptoPerShare: # Crypto per share information
+      coin: SOL # Cryptocurrency symbol
+      amount: 12.4 # Amount per share
+    mNAV: 42.3 # Modified Net Asset Value percentage
+    holdings: # List of cryptocurrency holdings
+      - coin: SOL # Cryptocurrency symbol
+        amount: 2,481,295 # Quantity held (with commas)
+        value: 2.1B # USD value (with B for billions)
       - coin: HPL
         amount: 4,872,100
         value: 1.32B
